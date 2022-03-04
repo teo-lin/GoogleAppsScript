@@ -1,0 +1,32 @@
+/* The best solution really depends on how many rows your sheet has and the data sources and types you use.
+The always accurate solution that works reasonably fast on all data types is the "Reversed for + getValues()" one (SOLUTION 7)
+If you really want a one-liner and you are certain your data has no local references, use the getNextDataCell() (SOLUTION 1)
+See full article for all 8 solutions, benchmark, comparison and details:
+https://www.linkedin.com/pulse/how-get-last-filled-row-non-contiguous-column-via-google-codreanu
+Remember that this works only if the script is contained in a Google Spreadsheet
+*/
+
+// COMMON PART (needed for all solutions) -------------------
+// replace 'yourSheetName' and column A with your own values
+  const tab = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('yourSheetName')
+  const column = tab.getRange('A:A') 
+
+// SOLUTION 7 ------------------------------------------------
+function getLastNonContiguousFilledRow (tab, column) {
+  let value = ''
+  const max = tab.getMaxRows()
+  let values = column.getValues()
+  values = [].concat.apply([], values)
+  for (row = max - 1; row > 0; row--) {
+    value = values[row]
+    if (value != '') { break }
+  }
+  let lastNonContiguousFilledRow = row + 1  
+  return lastNonContiguousFilledRow
+ }
+ 
+ 
+// SOLUTION 1 ------------------------------------------------
+function getLastNonContiguousFilledLine (column) {
+  return column.getNextDataCell(SpreadsheetApp.Direction.UP).getA1Notation().slice(1)
+}
